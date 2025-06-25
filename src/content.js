@@ -24,55 +24,57 @@
     function checkAndClickNextAlbum() {
         console.log("[geriau-pakartot] Running album check...");
 
-        // Debug: Highlight player elements
-        $('.jp-pause, #jp_poster_0').addClass('tm-debug-border');
+        let isPaused = $('.jp-pause').is(':hidden'); // if paused, then play button is visible
+        let currentTrack = $('.jp-playlist-current');
+        let isLastTrackInPlaylist = currentTrack.parent().children('li:last-child')[0] === currentTrack[0];
 
-        if ($('.jp-pause').is(':hidden')) {
-            console.log("[geriau-pakartot] Player is paused - attempting next album");
+        if (!isPaused || !currentTrack.length || !isLastTrackInPlaylist) {
+            console.log("[geriau-pakartot] Player is not paused or not on the last track");
+            return;
+        }
 
-            const poster = $('#jp_poster_0');
-            if (!poster.length) {
-                console.error("[geriau-pakartot] #jp_poster_0 not found!");
-                return;
-            }
+        console.log("[geriau-pakartot] Player is paused - attempting next album");
 
-            const previousAlbumCover = poster.attr('src');
-            if (!previousAlbumCover) {
-                console.error("[geriau-pakartot] No src found for album poster");
-                return;
-            }
+        const poster = $('#jp_poster_0');
+        if (!poster.length) {
+            console.error("[geriau-pakartot] #jp_poster_0 not found!");
+            return;
+        }
 
-            const newSrc = previousAlbumCover.replace('348x348', '225x225');
-            console.log(`[geriau-pakartot] Searching for image with src: ${newSrc}`);
+        const previousAlbumCover = poster.attr('src');
+        if (!previousAlbumCover) {
+            console.error("[geriau-pakartot] No src found for album poster");
+            return;
+        }
 
-            const albumCoverInList = $(`img[src="${newSrc}"]`).first();
-            if (!albumCoverInList.length) {
-                console.error(`[geriau-pakartot] Target image not found: ${newSrc}`);
-                return;
-            }
+        const newSrc = previousAlbumCover.replace('348x348', '225x225');
+        console.log(`[geriau-pakartot] Searching for image with src: ${newSrc}`);
 
-            // Enhanced DOM traversal
-            const parentDiv = albumCoverInList.parents().eq(3);
-            if (!parentDiv.length) {
-                console.error("[geriau-pakartot] Parent container not found");
-                return;
-            }
+        const albumCoverInList = $(`img[src="${newSrc}"]`).first();
+        if (!albumCoverInList.length) {
+            console.error(`[geriau-pakartot] Target image not found: ${newSrc}`);
+            return;
+        }
 
-            const nextSibling = parentDiv.next();
-            if (!nextSibling.length) {
-                console.error("[geriau-pakartot] Next sibling not found");
-                return;
-            }
+        // Enhanced DOM traversal
+        const parentDiv = albumCoverInList.parents().eq(3);
+        if (!parentDiv.length) {
+            console.error("[geriau-pakartot] Parent container not found");
+            return;
+        }
 
-            const playButton = nextSibling.find('.play-release.album-big-overflow-play');
-            if (playButton.length) {
-                console.log("[geriau-pakartot] Clicking next album play button");
-                simulateTrustedClick(playButton[0]);
-            } else {
-                console.error("[geriau-pakartot] Play button not found in next sibling");
-            }
+        const nextSibling = parentDiv.next();
+        if (!nextSibling.length) {
+            console.error("[geriau-pakartot] Next sibling not found");
+            return;
+        }
+
+        const playButton = nextSibling.find('.play-release.album-big-overflow-play');
+        if (playButton.length) {
+            console.log("[geriau-pakartot] Clicking next album play button");
+            simulateTrustedClick(playButton[0]);
         } else {
-            console.log("[geriau-pakartot] Player is still playing");
+            console.error("[geriau-pakartot] Play button not found in next sibling");
         }
     }
 
