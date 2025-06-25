@@ -1,13 +1,14 @@
 {
     "name": "geriau-pakartot",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Įrankiai pagerinantys pakartot.lt patirtį",
     "main": "content.js",
     "scripts": {
-        "build": "babel src --out-dir dist --env-name production && npm run copyfiles && npm run zip",
+        "bump-version": "npm version patch --no-git-tag-version && node scripts/bump-manifest-version.js",
         "copyfiles": "copyfiles -u 1 src/manifest.json src/popup.html src/icons/* dist/",
-        "zip": "cd dist && zip -r ../dist.zip .",
-        "start": "webpack --watch",
+        "zip": "cd dist && zip -r dist.zip .",
+        "build": "npm run bump-version && babel src --out-dir dist --env-name production && npm run copyfiles && npm run zip",
+        "publish": "node scripts/publish.js",
         "lint": "eslint src/**/*.js"
     },
     "author": "https://github.com/psychonout",
@@ -16,7 +17,9 @@
         "@babel/cli": "^7.21.5",
         "@babel/core": "^7.21.5",
         "babel-plugin-transform-remove-console": "^6.9.4",
+        "chrome-webstore-upload": "^3.1.4",
         "copyfiles": "^2.4.1",
+        "dotenv": "^16.5.0",
         "eslint": "^8.44.0",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
