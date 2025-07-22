@@ -71,6 +71,76 @@
         input:checked+.slider:before {
             transform: translateX(20px);
         }
+
+        /* Media Controls Styles */
+        .media-controls {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+            gap: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .secondary-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-btn.secondary {
+            font-size: 24px;
+        }
+
+        .control-btn.shuffle.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .control-btn.repeat.active {
+            background: #FF9800;
+            color: white;
+            border-color: #FF9800;
+        }
+
+        .control-btn {
+            padding: 0px;
+            margin: 0px;
+            border: none;
+            cursor: pointer;
+            font-size: 36px;
+            color: #333;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 36px;
+            opacity: 0.7;
+            background: none;
+        }
+
+        .control-btn:hover {
+            opacity: 1;
+        }
+
+        .control-btn.play-pause {
+            color: white;
+        }
+
+        .status-message {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -81,6 +151,22 @@
             <input type="checkbox" id="autoplay-toggle">
             <span class="slider"></span>
         </label>
+    </div>
+
+    <div class="media-controls">
+        <div class="title">Grotuvo valdymas</div>
+        <div class="control-buttons">
+            <button class="control-btn" id="prev-album-btn" title="Ankstesnis albumas">⏮️</button>
+            <button class="control-btn" id="prev-btn" title="Ankstesnis takelis">⏪</button>
+            <button class="control-btn play-pause" id="play-pause-btn" title="Groti/Sustabdyti">▶️</button>
+            <button class="control-btn" id="next-btn" title="Sekantis takelis">⏩</button>
+            <button class="control-btn" id="next-album-btn" title="Sekantis albumas">⏭️</button>
+        </div>
+        <div class="secondary-controls">
+            <button class="control-btn secondary shuffle" id="shuffle-btn" title="Įjungti 'Shuffle">🔀</button>
+            <button class="control-btn secondary repeat" id="repeat-btn" title="Kartoti">🔁</button>
+        </div>
+        <div class="status-message" id="status-message">Valdykite pakartot.lt iš bet kur</div>
     </div>
     <script src="popup.js"></script>
 </body>

@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Geriau pakartot.lt",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Įrankiai pagerinantys pakartot.lt patirtį",
   "content_scripts": [
     {
       "matches": [
-        "https://pakartot.lt/new_music*",
-        "https://www.pakartot.lt/new_music*"
+        "https://pakartot.lt/*",
+        "https://www.pakartot.lt/*"
       ],
       "js": [
         "jquery-3.6.0.min.js",
@@ -26,6 +26,8 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab",
+    "tabs"
   ]
 }
