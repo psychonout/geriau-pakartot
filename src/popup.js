@@ -20,7 +20,7 @@ toggle.addEventListener('change', function () {
 
 // Media control functions
 function findPakartotTab(callback) {
-    chrome.tabs.query({ url: ["https://pakartot.lt/*", "https://www.pakartot.lt/*"] }, function (tabs) {
+    chrome.tabs.query({ url: ['https://pakartot.lt/*', 'https://www.pakartot.lt/*'] }, function (tabs) {
         if (tabs.length > 0) {
             callback(tabs[0]); // Use the first matching tab
         } else {

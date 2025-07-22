@@ -1,8 +1,8 @@
 # Geriau Pakartot
 
-Paprastas skriptukas padedantis automatiškai groti albumus iš pakartot.lt vieną po kito
+Naršyklės įskiepis padedantis automatiškai groti albumus vieną po kito pakartot.lt portale
+Taipogi leidžia valdyti pakartot.lt grotuvą iš bet kurio kito skirtuko.
 ---
-A simple script that helps to continously play albums at pakartot.lt
 
 ## Usage
 
@@ -16,9 +16,24 @@ Dependencies only needed for building and publishing scripts.
 npm install
 ```
 
+### Available Scripts
+
+* `npm run lint` - Run ESLint to check code quality
+* `npm test` - Run Jest tests
+* `npm run build` - Build extension with version bump
+* `npm run publish` - Publish to Chrome Web Store
+
+### CI/CD
+
+This project uses GitHub Actions for automated:
+* **Pull Request checks**: Linting and testing
+* **Automatic publishing**: On merge to main branch
+
+See [GITHUB_ACTIONS.md](./GITHUB_ACTIONS.md) for setup instructions.
+
 ## todo:
 
-* auto deploy using github actions
+* ✅ auto deploy using github actions
 * rewrite to native js
 * remember last played album
 * sync liked tracks to spotify/youtube
