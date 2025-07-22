@@ -1,6 +1,6 @@
 {
     "name": "geriau-pakartot",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Įrankiai pagerinantys pakartot.lt patirtį",
     "main": "content.js",
     "scripts": {
@@ -9,7 +9,9 @@
         "zip": "cd dist && zip -r dist.zip .",
         "build": "npm run bump-version && babel src --out-dir dist --env-name production && npm run copyfiles && npm run zip",
         "publish": "node scripts/publish.js",
-        "lint": "eslint src/**/*.js"
+        "lint": "eslint src/**/*.js",
+        "test": "jest",
+        "test:watch": "jest --watch"
     },
     "author": "https://github.com/psychonout",
     "license": "MIT",
@@ -21,6 +23,8 @@
         "copyfiles": "^2.4.1",
         "dotenv": "^16.5.0",
         "eslint": "^8.44.0",
+        "jest": "^29.6.1",
+        "jest-environment-jsdom": "^29.6.1",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
     },
@@ -32,5 +36,14 @@
                 ]
             }
         }
+    },
+    "jest": {
+        "testEnvironment": "jsdom",
+        "setupFilesAfterEnv": [
+            "<rootDir>/tests/setup.js"
+        ],
+        "testMatch": [
+            "<rootDir>/tests/**/*.test.js"
+        ]
     }
 }
