@@ -43,6 +43,6 @@ describe('Extension Manifest', () => {
     test('should have required permissions', () => {
         expect(manifest.permissions).toBeDefined();
         expect(manifest.permissions).toContain('storage');
-        expect(manifest.permissions).toContain('activeTab');
+        expect(manifest.permissions).toContain('tabs');
     });
 });
