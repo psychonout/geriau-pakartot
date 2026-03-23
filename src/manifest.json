@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Geriau pakartot.lt",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Įrankiai pagerinantys pakartot.lt patirtį",
   "background": {
     "service_worker": "background.js"
