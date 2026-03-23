@@ -1,8 +1,25 @@
 {
   "manifest_version": 3,
   "name": "Geriau pakartot.lt",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Įrankiai pagerinantys pakartot.lt patirtį",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "next-album": {
+      "suggested_key": {
+        "default": "Alt+Shift+Right"
+      },
+      "description": "Sekantis albumas"
+    },
+    "prev-album": {
+      "suggested_key": {
+        "default": "Alt+Shift+Left"
+      },
+      "description": "Ankstesnis albumas"
+    }
+  },
   "content_scripts": [
     {
       "matches": [

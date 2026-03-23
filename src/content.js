@@ -87,15 +87,19 @@ console.log('[geriau-pakartot] Timestamp:', new Date().toISOString());
             return null;
         }
 
-        // Get the track title from the current playlist item
-        const currentTrackTitle = currentTrack.text().split('by')[0].trim();
+        // Parse "Track Title by Artist Name" from the playlist item text
+        const fullText = currentTrack.text().trim();
+        const byIndex = fullText.indexOf(' by ');
+        const currentTrackTitle = byIndex !== -1 ? fullText.substring(0, byIndex) : fullText;
+        const currentTrackArtist = byIndex !== -1 ? fullText.substring(byIndex + 4) : '';
+
         if (!currentTrackTitle.length) {
             console.error('[geriau-pakartot] No track title found!');
             return null;
         }
 
-        console.log(`[geriau-pakartot] Current track title: "${currentTrackTitle}"`);
-        return { currentTrack, currentTrackTitle };
+        console.log(`[geriau-pakartot] Current track: "${currentTrackTitle}" by "${currentTrackArtist}"`);
+        return { currentTrack, currentTrackTitle, currentTrackArtist };
     }
 
     function getCurrentAlbumContainer() {
@@ -243,6 +247,82 @@ console.log('[geriau-pakartot] Timestamp:', new Date().toISOString());
         clearInterval(window._pakartotInterval);
         window._pakartotInterval = null;
         console.log('[geriau-pakartot] Autoplay stopped');
+    }
+
+    // Set up Media Session API so browser owns media keys, preventing propagation to other apps
+    function setupMediaSession() {
+        if (!('mediaSession' in navigator)) return;
+
+        navigator.mediaSession.setActionHandler('play', () => {
+            const playBtn = $('.jp-play');
+            if (playBtn.is(':visible')) {
+                simulateTrustedClick(playBtn[0]);
+                manuallyPaused = false;
+            }
+        });
+
+        navigator.mediaSession.setActionHandler('pause', () => {
+            const pauseBtn = $('.jp-pause');
+            if (pauseBtn.is(':visible')) {
+                simulateTrustedClick(pauseBtn[0]);
+                manuallyPaused = true;
+            }
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            if (isLastTrackInPlaylist()) {
+                clickNextAlbumButton();
+            } else {
+                const nextBtn = $('.jp-next');
+                if (nextBtn.length) simulateTrustedClick(nextBtn[0]);
+            }
+        });
+
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            if (isFirstTrackInPlaylist()) {
+                clickPreviousAlbumButton();
+            } else {
+                const prevBtn = $('.jp-previous');
+                if (prevBtn.length) simulateTrustedClick(prevBtn[0]);
+            }
+        });
+
+        console.log('[geriau-pakartot] Media Session handlers registered');
+    }
+
+    function updateMediaSessionMetadata() {
+        if (!('mediaSession' in navigator)) return;
+
+        const trackInfo = getCurrentTrackInfo();
+        if (!trackInfo) return;
+
+        const { currentTrackTitle: title, currentTrackArtist: artist } = trackInfo;
+
+        let artwork = [];
+        const albumContainer = getCurrentAlbumContainer();
+        if (albumContainer) {
+            const img = albumContainer.find('img');
+            if (img.length) {
+                artwork = [{ src: img.attr('src') }];
+            }
+        }
+
+        navigator.mediaSession.metadata = new MediaMetadata({ title, artist, artwork });
+        console.log('[geriau-pakartot] Media session metadata updated:', title, artist);
+    }
+
+    // Watch for track changes to keep OS media session metadata up to date
+    function observeTrackChanges(retries = 10) {
+        const playlist = document.querySelector('.jp-playlist ul');
+        if (!playlist) {
+            if (retries > 0) setTimeout(() => observeTrackChanges(retries - 1), 2000);
+            return;
+        }
+        const observer = new MutationObserver(() => {
+            if (isPlayerPlaying()) updateMediaSessionMetadata();
+        });
+        observer.observe(playlist, { attributes: true, subtree: true, attributeFilter: ['class'] });
+        console.log('[geriau-pakartot] Track change observer set up');
     }
 
     // Check storage on load
@@ -422,6 +502,47 @@ console.log('[geriau-pakartot] Timestamp:', new Date().toISOString());
             });
             break;
 
+        case 'getPlaybackDetails':
+            console.log('[geriau-pakartot] Getting playback details...');
+            const trackInfo = getCurrentTrackInfo();
+            const playbackState = {
+                isPlaying: isPlayerPlaying(),
+                artist: null,
+                title: null,
+                artwork: null
+            };
+
+            if (trackInfo) {
+                const { currentTrackTitle, currentTrackArtist } = trackInfo;
+                playbackState.title = currentTrackTitle;
+                playbackState.artist = currentTrackArtist;
+
+                // Try to find artwork
+                // method 1: check if there's an image in the current album container
+                const albumContainer = getCurrentAlbumContainer();
+                if (albumContainer) {
+                    const img = albumContainer.find('img');
+                    if (img.length) {
+                        playbackState.artwork = img.attr('src');
+                        console.log('[geriau-pakartot] Found artwork in album container:', playbackState.artwork);
+                    }
+                }
+                
+                // method 2: fallback to any evident player poster if method 1 failed
+                if (!playbackState.artwork) {
+                    // This is a guess based on common player class names, 
+                    // might need adjustment if a specific class exists for usage
+                    const playerPoster = $('.jp-poster img, .jp-jplayer img'); 
+                    if (playerPoster.length) {
+                        playbackState.artwork = playerPoster.attr('src');
+                        console.log('[geriau-pakartot] Found artwork in player poster:', playbackState.artwork);
+                    }
+                }
+            }
+
+            sendResponse(playbackState);
+            break;
+
         default:
             console.log('[geriau-pakartot] Unknown command:', request.action);
             sendResponse({ message: 'Nežinomas komanda' });
@@ -431,4 +552,7 @@ console.log('[geriau-pakartot] Timestamp:', new Date().toISOString());
     });
 
     console.log('[geriau-pakartot] Message listener set up');
+
+    setupMediaSession();
+    observeTrackChanges();
 })();

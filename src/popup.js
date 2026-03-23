@@ -163,25 +163,62 @@ nextAlbumBtn.addEventListener('click', () => sendPlayerCommand('nextAlbum'));
 // Request current player state when popup opens
 findPakartotTab(function (tab) {
     if (tab) {
-        chrome.tabs.sendMessage(tab.id, { action: 'getPlayerState' }, function (response) {
-            if (chrome.runtime.lastError) {
-                // More informative error message
-                if (chrome.runtime.lastError.message.includes('Could not establish connection')) {
-                    updateStatus('Perkraukite pakartot.lt puslapį');
-                }
-                return;
-            }
-            if (response && response.isPlaying !== undefined) {
-                updatePlayPauseButton(response.isPlaying);
-            }
-            if (response && response.isShuffling !== undefined) {
-                updateShuffleButton(response.isShuffling);
-            }
-            if (response && response.isRepeating !== undefined) {
-                updateRepeatButton(response.isRepeating);
-            }
-        });
+        // Initial state update
+        updatePlayerState(tab.id);
+
+        // Poll for updates every second while popup is open
+        setInterval(() => {
+            updatePlayerState(tab.id);
+        }, 1000);
+
     } else {
         updateStatus('Atidarykite pakartot.lt puslapį');
     }
 });
+
+function updatePlayerState(tabId) {
+    // Get player controls state
+    chrome.tabs.sendMessage(tabId, { action: 'getPlayerState' }, function (response) {
+        if (chrome.runtime.lastError) {
+            // Suppress errors during polling as popup might close
+            return;
+        }
+        if (response) {
+            if (response.isPlaying !== undefined) updatePlayPauseButton(response.isPlaying);
+            if (response.isShuffling !== undefined) updateShuffleButton(response.isShuffling);
+            if (response.isRepeating !== undefined) updateRepeatButton(response.isRepeating);
+        }
+    });
+
+    // Get playback details (track info)
+    chrome.tabs.sendMessage(tabId, { action: 'getPlaybackDetails' }, function (response) {
+        if (chrome.runtime.lastError) return;
+
+        if (response) {
+            updateNowPlaying(response);
+        }
+    });
+}
+
+const nowPlayingContainer = document.getElementById('now-playing-container');
+const trackArtwork = document.getElementById('track-artwork');
+const trackTitle = document.getElementById('track-title');
+const trackArtist = document.getElementById('track-artist');
+
+function updateNowPlaying(data) {
+    if (data.title) {
+        trackTitle.textContent = data.title;
+        trackArtist.textContent = data.artist || '';
+
+        if (data.artwork) {
+            trackArtwork.src = data.artwork;
+            trackArtwork.style.display = 'block';
+        } else {
+            trackArtwork.style.display = 'none';
+        }
+
+        nowPlayingContainer.classList.add('active');
+    } else {
+        nowPlayingContainer.classList.remove('active');
+    }
+}

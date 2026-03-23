@@ -72,6 +72,48 @@
             transform: translateX(20px);
         }
 
+        /* Now Playing Styles */
+        .now-playing {
+            margin-top: 20px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default until we have data */
+            text-align: center;
+        }
+
+        .now-playing.active {
+            display: block;
+        }
+
+        .track-artwork {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin: 0 auto 12px;
+            display: block;
+            background: #eee;
+        }
+
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .track-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #222;
+        }
+
+        .track-artist {
+            font-size: 13px;
+            color: #666;
+        }
+
         /* Media Controls Styles */
         .media-controls {
             margin-top: 20px;
@@ -151,6 +193,15 @@
             <input type="checkbox" id="autoplay-toggle">
             <span class="slider"></span>
         </label>
+    </div>
+
+    <!-- Now Playing Section -->
+    <div class="now-playing" id="now-playing-container">
+        <img id="track-artwork" class="track-artwork" src="" alt="Album Artwork">
+        <div class="track-info">
+            <div id="track-title" class="track-title"></div>
+            <div id="track-artist" class="track-artist"></div>
+        </div>
     </div>
 
     <div class="media-controls">
