@@ -45,4 +45,8 @@ describe('Extension Manifest', () => {
         expect(manifest.permissions).toContain('storage');
         expect(manifest.permissions).toContain('tabs');
     });
+
+    test('should not have activeTab permission', () => {
+        expect(manifest.permissions).not.toContain('activeTab');
+    });
 });
