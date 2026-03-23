@@ -1,6 +1,6 @@
 {
     "name": "geriau-pakartot",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "Įrankiai pagerinantys pakartot.lt patirtį",
     "main": "content.js",
     "scripts": {
